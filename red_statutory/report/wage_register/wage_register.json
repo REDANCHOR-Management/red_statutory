@@ -1,0 +1,13 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "doctype": "Report",
+ "filters": [],
+ "is_standard": "Yes",
+ "module": "RED Statutory",
+ "name": "Wage Register",
+ "prepared_report": 0,
+ "ref_doctype": "Salary Slip",
+ "report_name": "Wage Register",
+ "report_type": "Script Report"
+}
