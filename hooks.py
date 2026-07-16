@@ -1,0 +1,6 @@
+app_name = "red_statutory"
+app_title = "RED Statutory"
+app_publisher = "REDANCHOR"
+app_description = "REDANCHOR Statutory Registers & Compliance"
+app_email = "admin@redanchor.in"
+app_license = "MIT"
