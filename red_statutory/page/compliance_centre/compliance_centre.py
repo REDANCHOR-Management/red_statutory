@@ -1,5 +1,3 @@
-import frappe
-
-
-def get_context(context):
-    context.no_cache = 1
+@frappe.whitelist()
+def get_salary_slips(internal_client_code, month, year):
+    return []
