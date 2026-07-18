@@ -1,1 +1,107 @@
-<h1>Wage Register</h1>
+<div class="wage-register__title">
+	<h1>{{ register.title or "Wage Register" }}</h1>
+	{% if register.company %}
+	<p><strong>{{ register.company }}</strong></p>
+	{% endif %}
+	{% if register.period %}
+	<p>Wage Period: {{ register.period }}</p>
+	{% endif %}
+</div>
+
+<div class="wage-register__meta">
+	{% if register.establishment_name %}
+	<div><strong>Establishment:</strong> {{ register.establishment_name }}</div>
+	{% endif %}
+	{% if register.establishment_address %}
+	<div><strong>Address:</strong> {{ register.establishment_address }}</div>
+	{% endif %}
+	{% if register.registration_no %}
+	<div><strong>Registration No.:</strong> {{ register.registration_no }}</div>
+	{% endif %}
+</div>
+
+<table>
+	<thead>
+		<tr>
+			<th class="serial" rowspan="2">Sr.<br>No.</th>
+			<th class="employee-code" rowspan="2">Employee<br>Code</th>
+			<th class="employee-name" rowspan="2">Employee Name</th>
+			<th class="designation" rowspan="2">Designation</th>
+			<th class="days" rowspan="2">Days<br>Worked</th>
+			<th class="group-heading" colspan="{{ register.earning_components|length }}">Earnings</th>
+			<th class="amount" rowspan="2">Gross<br>Earnings</th>
+			<th class="group-heading" colspan="{{ register.deduction_components|length }}">Deductions</th>
+			<th class="amount" rowspan="2">Total<br>Deductions</th>
+			<th class="amount" rowspan="2">Net Pay</th>
+		</tr>
+		<tr>
+			{% for component in register.earning_components %}
+			{% set component_label = component.label %}
+			<th class="amount">{{ component_label }}</th>
+			{% endfor %}
+			{% for component in register.deduction_components %}
+			{% set component_label = component.label %}
+			<th class="amount">{{ component_label }}</th>
+			{% endfor %}
+		</tr>
+	</thead>
+
+	<tbody>
+		{% for row in register.rows %}
+		{% set earnings = row.earnings or row.earning_details or {} %}
+		{% set deductions = row.deductions or row.deduction_details or {} %}
+		<tr>
+			<td class="serial">{{ loop.index }}</td>
+			<td class="employee-code">{{ row.employee_id }}</td>
+			<td class="employee-name">{{ row.employee_name or "" }}</td>
+			<td class="designation">{{ row.designation or "" }}</td>
+			<td class="days">{{ frappe.format_value(row.days_worked or row.payment_days or 0, {"fieldtype": "Float", "precision": 2}) }}</td>
+
+			{% for component in register.earning_components %}
+			{% set component_key = component.key %}
+			<td class="amount">{{ frappe.format_value(earnings.get(component_key, row.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+			{% endfor %}
+
+			<td class="amount">{{ frappe.format_value(row.gross_earnings or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+
+			{% for component in register.deduction_components %}
+			{% set component_key = component.key %}
+			<td class="amount">{{ frappe.format_value(deductions.get(component_key, row.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+			{% endfor %}
+
+			<td class="amount">{{ frappe.format_value(row.gross_deductions or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+			<td class="amount">{{ frappe.format_value(row.net_payable or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+
+	<tfoot>
+		{% set total_deductions = totals.deductions or totals.deduction_components or {} %}
+		{% set total_deductions = totals.deductions or totals.deduction_components or {} %}
+		<tr class="total-row">
+			<td colspan="4">Grand Total</td>
+			<td class="amount">{{ frappe.format_value(totals.days_worked or totals.payment_days or 0, {"fieldtype": "Float", "precision": 2}) }}</td>
+
+			{% for component in register.earning_components %}
+			{% set component_key = component.key %}
+			<td class="amount">{{ frappe.format_value(total_earnings.get(component_key, totals.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+			{% endfor %}
+
+			<td class="amount">{{ frappe.format_value(totals.gross_earnings or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+
+			{% for component in register.deduction_components %}
+			{% set component_key = component.key %}
+			<td class="amount">{{ frappe.format_value(total_deductions.get(component_key, totals.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+			{% endfor %}
+
+			<td class="amount">{{ frappe.format_value(totals.gross_deductions or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+			<td class="amount">{{ frappe.format_value(totals.net_payable or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+		</tr>
+	</tfoot>
+</table>
+
+<div class="wage-register__signatures">
+	<div>Prepared By</div>
+	<div>Checked By</div>
+	<div>Authorised Signatory</div>
+</div>
