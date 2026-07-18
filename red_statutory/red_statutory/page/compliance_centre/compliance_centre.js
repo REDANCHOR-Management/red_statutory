@@ -126,13 +126,26 @@ function money(value) {
 
 function render_wage_register(data) {
 
-	$("#register-output").html(`
-		<div class="alert alert-success">
-			<b>Success.</b><br><br>
+	frappe.call({
+		method: "frappe.client.get",
+		args: {
+			doctype: "Page",
+			name: "compliance-centre"
+		},
+		callback: function () {
 
-			Employees :
-			${data.rows.length}
-		</div>
-	`);
+			frappe.require("/assets/red_statutory/wage_register.html", function () {
+
+				const html = frappe.render_template(
+					"wage_register",
+					{register: data}
+				);
+
+				$("#register-output").html(html);
+
+			});
+
+		}
+	});
 
 }
