@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "red_statutory"
+version = "0.0.1"
+description = "REDANCHOR Statutory Registers & Labour Compliance"
+authors = [
+    { name = "REDANCHOR Management", email = "info@redanchor.in" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = []
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["red_statutory*"]
