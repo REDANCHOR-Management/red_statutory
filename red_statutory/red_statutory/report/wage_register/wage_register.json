@@ -1,8 +1,21 @@
 {
-  "doctype": "Report",
-  "report_name": "Wage Register",
-  "ref_doctype": "Salary Slip",
-  "report_type": "Query Report",
-  "is_standard": "Yes",
-  "module": "RED Statutory"
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2026-07-18 00:00:00",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2026-07-18 00:00:00",
+ "modified_by": "Administrator",
+ "module": "RED Statutory",
+ "name": "Wage Register",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Salary Slip",
+ "report_name": "Wage Register",
+ "report_type": "Script Report"
 }

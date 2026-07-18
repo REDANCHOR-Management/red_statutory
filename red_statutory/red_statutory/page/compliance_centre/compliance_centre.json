@@ -1,7 +1,22 @@
 {
-  "doctype": "Page",
-  "page_name": "compliance-centre",
-  "module": "RED Statutory",
-  "standard": "Yes",
-  "title": "Compliance Centre"
+ "content": "[]",
+ "creation": "2026-07-18 00:00:00",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-07-18 00:00:00",
+ "modified_by": "Administrator",
+ "module": "RED Statutory",
+ "name": "compliance-centre",
+ "page_name": "compliance-centre",
+ "roles": [
+  {
+   "role": "HR Manager"
+  },
+  {
+   "role": "HR User"
+  }
+ ],
+ "standard": "Yes",
+ "title": "Compliance Centre"
 }
