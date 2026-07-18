@@ -1,0 +1,8 @@
+{
+  "doctype": "Report",
+  "report_name": "Wage Register",
+  "ref_doctype": "Salary Slip",
+  "report_type": "Query Report",
+  "is_standard": "Yes",
+  "module": "RED Statutory"
+}
