@@ -1,0 +1,6 @@
+app_name = "red_statutory"
+app_title = "RED Statutory"
+app_publisher = "REDANCHOR"
+app_description = "Statutory Register Generator"
+app_email = ""
+app_license = "MIT"

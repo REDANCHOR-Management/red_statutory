@@ -1,0 +1,2 @@
+recursive-include red_statutory/page *.json *.js
+recursive-include red_statutory/templates *.html
