@@ -4,7 +4,7 @@ from red_statutory.utils.pdf import html_to_pdf
 from red_statutory.registers.wage_register.query import get_data
 
 
-TEMPLATE = "red_statutory/registers/wage_register/template.html"
+TEMPLATE = "red_statutory/templates/registers/wage_register.html"
 
 
 @frappe.whitelist()
