@@ -1,1 +1,0 @@
-# This Frappe app has no standalone Python dependencies.
