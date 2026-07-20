@@ -1,1 +1,0 @@
-frappe.query_reports["Wage Register"] = {};
