@@ -1,1 +1,167 @@
-<!-- Wage Register Jinja Template -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+body{font-family:"Open Sans",sans-serif;font-size:10px;}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #000;padding:4px;vertical-align:top;}
+th{text-align:left;}
+.center{text-align:center;}
+.right{text-align:right;}
+.bold{font-weight:bold;}
+.header-label{font-weight:700;text-transform:uppercase;margin-bottom:6px;}
+.header-address{line-height:1.5;}
+.law-block{font-size:9px;line-height:1.4;}
+@page{
+    size:A4 landscape;
+    margin:8mm;
+}
+</style>
+
+</head>
+
+<body>
+
+<table style="border:none;margin-bottom:15px;">
+<tr>
+
+<td style="border:none;width:35%;">
+<div class="header-label">NAME AND ADDRESS OF CONTRACTOR</div>
+<div class="header-address">
+{{ register.contractor_name }}<br>
+{{ register.contractor_address|replace('\n','<br>') }}
+</div>
+</td>
+
+<td style="border:none;width:35%;">
+<div class="header-label">NAME AND ADDRESS OF PRINCIPAL EMPLOYER</div>
+<div class="header-address">
+{{ register.principal_employer_name }}<br>
+{{ register.principal_employer_address|replace('\n','<br>') }}
+</div>
+</td>
+
+<td style="border:none;width:30%;">
+<div class="law-block">
+(1) Form under Rule 6 of Equal Remuneration Rules 1976<br>
+(2) Gujarat Minimum Wages Rules 1961<br>
+(3) Payment of Wages Gujarat Rules 1963<br>
+(4) Contract Labour Rules 1972<br>
+(5) Inter State Migrant Workers Rules 1981
+</div>
+</td>
+
+</tr>
+</table>
+
+<h2 style="text-align:center;">WAGE REGISTER</h2>
+
+<p style="text-align:center;">
+Wage Period :
+{{ register.from_date }}
+to
+{{ register.to_date }}
+</p>
+
+<table>
+
+<thead>
+<tr>
+<th>Sr</th>
+<th>Employee Details</th>
+<th>Attendance</th>
+<th>Wage Rates</th>
+<th>Earnings</th>
+<th>Gross Salary</th>
+<th>Deductions</th>
+<th>Gross Deductions</th>
+<th>Net Payable</th>
+<th>Signature</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% set grand_gross=namespace(value=0) %}
+{% set grand_ded=namespace(value=0) %}
+{% set grand_net=namespace(value=0) %}
+
+{% for row in rows %}
+
+{% set grand_gross.value=grand_gross.value+row.gross_salary %}
+{% set grand_ded.value=grand_ded.value+row.gross_deduction %}
+{% set grand_net.value=grand_net.value+row.net_payable %}
+
+<tr>
+
+<td class="center">{{ loop.index }}</td>
+
+<td>
+{{ row.employee_name }}<br>
+{{ row.employee }}<br>
+{{ row.designation }}<br><br>
+UAN : {{ row.uan }}<br>
+ESIC : {{ row.esic_number }}
+</td>
+
+<td>
+WD : {{ row.working_days }}<br>
+PD : {{ row.payment_days }}<br>
+LWP : {{ row.leave_without_pay }}
+</td>
+
+<td>
+Basic : {{ "%.2f"|format(row.rate_basic) }}<br>
+HRA : {{ "%.2f"|format(row.rate_hra) }}<br>
+Other : {{ "%.2f"|format(row.rate_other) }}<br>
+Conv : {{ "%.2f"|format(row.rate_conveyance) }}<br>
+Spl : {{ "%.2f"|format(row.rate_special) }}
+</td>
+
+<td>
+Basic : {{ "%.2f"|format(row.basic) }}<br>
+HRA : {{ "%.2f"|format(row.hra) }}<br>
+Other : {{ "%.2f"|format(row.other) }}<br>
+Conv : {{ "%.2f"|format(row.conveyance) }}<br>
+Bonus : {{ "%.2f"|format(row.bonus) }}<br>
+Leaves : {{ "%.2f"|format(row.leave) }}
+</td>
+
+<td class="right">{{ "%.2f"|format(row.gross_salary) }}</td>
+
+<td>
+PF : {{ "%.2f"|format(row.pf) }}<br>
+ESI : {{ "%.2f"|format(row.esi) }}<br>
+PT : {{ "%.2f"|format(row.pt) }}<br>
+Advance : {{ "%.2f"|format(row.advance) }}<br>
+Loan : {{ "%.2f"|format(row.loan) }}<br>
+Food : {{ "%.2f"|format(row.food) }}<br>
+Penalty : {{ "%.2f"|format(row.penalty) }}<br>
+Insurance : {{ "%.2f"|format(row.insurance) }}<br>
+Other : {{ "%.2f"|format(row.other_deduction) }}
+</td>
+
+<td class="right">{{ "%.2f"|format(row.gross_deduction) }}</td>
+<td class="right">{{ "%.2f"|format(row.net_payable) }}</td>
+<td></td>
+
+</tr>
+
+{% endfor %}
+
+<tr class="bold">
+<td colspan="5" class="right">Grand Total</td>
+<td class="right">{{ "%.2f"|format(grand_gross.value) }}</td>
+<td></td>
+<td class="right">{{ "%.2f"|format(grand_ded.value) }}</td>
+<td class="right">{{ "%.2f"|format(grand_net.value) }}</td>
+<td></td>
+</tr>
+
+</tbody>
+</table>
+
+</body>
+</html>

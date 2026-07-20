@@ -6,31 +6,108 @@ frappe.pages['compliance-centre'].on_page_load = function (wrapper) {
 		single_column: true
 	});
 
-	const app = $(`
+	let body = $(`
 		<div class="p-4">
 
-			<div id="filters"></div>
+			<div id="filters" style="max-width:700px;"></div>
 
 			<div class="mt-4">
-				<button class="btn btn-primary" id="generate_btn">
-					Generate
+				<button class="btn btn-primary" id="generate_register">
+					Generate Register
 				</button>
 			</div>
 
 		</div>
 	`);
 
-	$(page.body).append(app);
+	$(page.body).append(body);
 
-	// Filters will be added here.
+	// -----------------------------
+	// Filters
+	// -----------------------------
 
-	$('#generate_btn').on('click', function () {
+	const fields = [
+		{
+			fieldtype: "Select",
+			fieldname: "register",
+			label: "Register",
+			options: [
+				"Wage Register"
+			].join("\n"),
+			reqd: 1,
+			default: "Wage Register"
+		},
+		{
+			fieldtype: "Link",
+			fieldname: "internal_client_code",
+			label: "Customer",
+			options: "Customer",
+			reqd: 1
+		},
+		{
+			fieldtype: "Select",
+			fieldname: "month",
+			label: "Month",
+			reqd: 1,
+			options: [
+				"January",
+				"February",
+				"March",
+				"April",
+				"May",
+				"June",
+				"July",
+				"August",
+				"September",
+				"October",
+				"November",
+				"December"
+			].join("\n")
+		},
+		{
+			fieldtype: "Int",
+			fieldname: "year",
+			label: "Year",
+			reqd: 1,
+			default: new Date().getFullYear()
+		}
+	];
 
-		// Collect filters
+	let filter_group = new frappe.ui.FieldGroup({
+		fields: fields,
+		body: $("#filters")
+	});
 
-		// Call backend
+	filter_group.make();
 
-		// Download PDF
+	// -----------------------------
+	// Generate
+	// -----------------------------
+
+	$("#generate_register").click(function () {
+
+		let values = filter_group.get_values();
+
+		if (!values)
+			return;
+
+		frappe.call({
+
+			method:
+				"red_statutory.page.compliance_centre.compliance_centre.generate",
+
+			args: values,
+
+			callback: function () {
+
+				frappe.show_alert({
+					message: "Generating PDF...",
+					indicator: "green"
+				});
+
+			}
+
+		});
 
 	});
 
