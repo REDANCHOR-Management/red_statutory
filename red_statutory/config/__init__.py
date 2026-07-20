@@ -1,1 +1,0 @@
-"""RED Statutory desk configuration."""
