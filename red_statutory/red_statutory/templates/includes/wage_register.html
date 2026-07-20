@@ -1,107 +1,208 @@
-<div class="wage-register__title">
-	<h1>{{ register.title or "Wage Register" }}</h1>
-	{% if register.company %}
-	<p><strong>{{ register.company }}</strong></p>
-	{% endif %}
-	{% if register.period %}
-	<p>Wage Period: {{ register.period }}</p>
-	{% endif %}
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Wage Register</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 22mm;
+        }
 
-<div class="wage-register__meta">
-	{% if register.establishment_name %}
-	<div><strong>Establishment:</strong> {{ register.establishment_name }}</div>
-	{% endif %}
-	{% if register.establishment_address %}
-	<div><strong>Address:</strong> {{ register.establishment_address }}</div>
-	{% endif %}
-	{% if register.registration_no %}
-	<div><strong>Registration No.:</strong> {{ register.registration_no }}</div>
-	{% endif %}
-</div>
+        * {
+            box-sizing: border-box;
+        }
 
-<table>
-	<thead>
-		<tr>
-			<th class="serial" rowspan="2">Sr.<br>No.</th>
-			<th class="employee-code" rowspan="2">Employee<br>Code</th>
-			<th class="employee-name" rowspan="2">Employee Name</th>
-			<th class="designation" rowspan="2">Designation</th>
-			<th class="days" rowspan="2">Days<br>Worked</th>
-			<th class="group-heading" colspan="{{ register.earning_components|length }}">Earnings</th>
-			<th class="amount" rowspan="2">Gross<br>Earnings</th>
-			<th class="group-heading" colspan="{{ register.deduction_components|length }}">Deductions</th>
-			<th class="amount" rowspan="2">Total<br>Deductions</th>
-			<th class="amount" rowspan="2">Net Pay</th>
-		</tr>
-		<tr>
-			{% for component in register.earning_components %}
-			{% set component_label = component.label %}
-			<th class="amount">{{ component_label }}</th>
-			{% endfor %}
-			{% for component in register.deduction_components %}
-			{% set component_label = component.label %}
-			<th class="amount">{{ component_label }}</th>
-			{% endfor %}
-		</tr>
-	</thead>
+        body {
+            margin: 0;
+            color: #000;
+            font-family: Arial, sans-serif;
+            font-size: 8pt;
+            line-height: 1.35;
+        }
 
-	<tbody>
-		{% for row in register.rows %}
-		{% set earnings = row.earnings or row.earning_details or {} %}
-		{% set deductions = row.deductions or row.deduction_details or {} %}
-		<tr>
-			<td class="serial">{{ loop.index }}</td>
-			<td class="employee-code">{{ row.employee_id }}</td>
-			<td class="employee-name">{{ row.employee_name or "" }}</td>
-			<td class="designation">{{ row.designation or "" }}</td>
-			<td class="days">{{ frappe.format_value(row.days_worked or row.payment_days or 0, {"fieldtype": "Float", "precision": 2}) }}</td>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-			{% for component in register.earning_components %}
-			{% set component_key = component.key %}
-			<td class="amount">{{ frappe.format_value(earnings.get(component_key, row.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-			{% endfor %}
+        .register-header {
+            margin-bottom: 22mm;
+        }
 
-			<td class="amount">{{ frappe.format_value(row.gross_earnings or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+        .register-header td {
+            width: 33.333%;
+            padding: 0 3mm 0 0;
+            vertical-align: top;
+        }
 
-			{% for component in register.deduction_components %}
-			{% set component_key = component.key %}
-			<td class="amount">{{ frappe.format_value(deductions.get(component_key, row.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-			{% endfor %}
+        .header-label {
+            margin-bottom: 2mm;
+            font-size: 8.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
 
-			<td class="amount">{{ frappe.format_value(row.gross_deductions or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-			<td class="amount">{{ frappe.format_value(row.net_payable or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-		</tr>
-		{% endfor %}
-	</tbody>
+        .header-address {
+            min-height: 16mm;
+            line-height: 1.55;
+        }
 
-	<tfoot>
-		{% set total_deductions = totals.deductions or totals.deduction_components or {} %}
-		{% set total_deductions = totals.deductions or totals.deduction_components or {} %}
-		<tr class="total-row">
-			<td colspan="4">Grand Total</td>
-			<td class="amount">{{ frappe.format_value(totals.days_worked or totals.payment_days or 0, {"fieldtype": "Float", "precision": 2}) }}</td>
+        .law-block {
+            min-height: 222mm;
+            font-size: 7.5pt;
+            line-height: 1.55;
+        }
 
-			{% for component in register.earning_components %}
-			{% set component_key = component.key %}
-			<td class="amount">{{ frappe.format_value(total_earnings.get(component_key, totals.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-			{% endfor %}
+        .title {
+            margin: 0;
+            font-size: 12pt;
+            text-align: center;
+        }
 
-			<td class="amount">{{ frappe.format_value(totals.gross_earnings or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
+        .period {
+            min-height: 5mm;
+            margin: 2mm 0 22mm;
+            text-align: center;
+        }
 
-			{% for component in register.deduction_components %}
-			{% set component_key = component.key %}
-			<td class="amount">{{ frappe.format_value(total_deductions.get(component_key, totals.get(component_key, 0)), {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-			{% endfor %}
+        .register th,
+        .register td {
+            border: 0.25mm solid #000;
+            padding: 1.1mm;
+            vertical-align: top;
+        }
 
-			<td class="amount">{{ frappe.format_value(totals.gross_deductions or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-			<td class="amount">{{ frappe.format_value(totals.net_payable or 0, {"fieldtype": "Currency", "currency": register.currency}) }}</td>
-		</tr>
-	</tfoot>
-</table>
+        .register thead {
+            display: table-header-group;
+        }
 
-<div class="wage-register__signatures">
-	<div>Prepared By</div>
-	<div>Checked By</div>
-	<div>Authorised Signatory</div>
-</div>
+        .register th {
+            font-weight: 700;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .register tr {
+            page-break-inside: avoid;
+        }
+
+        .center {
+            text-align: center !important;
+        }
+
+        .right {
+            text-align: right !important;
+        }
+
+        .bold {
+            font-weight: 700;
+        }
+
+        .employee-block,
+        .attendance-block,
+        .rate-block,
+        .earning-block,
+        .deduction-block {
+            line-height: 1.5;
+        }
+
+        .amount {
+            white-space: nowrap;
+        }
+
+        .signature {
+            min-width: 222mm;
+        }
+
+        @media print {
+            body {
+                font-size: 8pt;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table class="register-header">
+        <tr>
+            <td>
+                <div class="header-label">Name and Address of Contractor</div>
+                <div class="header-address"></div>
+            </td>
+            <td>
+                <div class="header-label">Name and Address of Principal Employer</div>
+                <div class="header-address"></div>
+            </td>
+            <td>
+                <div class="law-block">
+                    <div>(1) Form under Rule 6 of Equal Remuneration Rules 1976</div>
+                    <div>(2) Gujarat Minimum Wages Rules 1961</div>
+                    <div>(3) Payment of Wages Gujarat Rules 1963</div>
+                    <div>(4) Contract Labour Rules 1972</div>
+                    <div>(5) Inter State Migrant Workers Rules 1981</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <h1 class="title">WAGE REGISTER</h1>
+    <div class="period">Wage Period:</div>
+
+    <table class="register">
+        <thead>
+            <tr>
+                <th>Sr</th>
+                <th>Employee Details</th>
+                <th>Attendance</th>
+                <th>Wage Rates</th>
+                <th>Earnings</th>
+                <th>Gross Salary</th>
+                <th>Deductions</th>
+                <th>Gross Deductions</th>
+                <th>Net Payable</th>
+                <th>Signature</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in register.rows %}
+            <tr>
+                <td class="center">{{ row.sr_no }}</td>
+                <td class="employee-block">
+                    {{ row.employee_name }}<br>
+                    {{ row.employee_id }}<br>
+                    {{ row.designation }}
+                </td>
+                <td class="attendance-block">
+                    WD : {{ row.working_days }}<br>
+                    PD : {{ row.payment_days }}<br>
+                    LWP :
+                </td>
+                <td class="rate-block"></td>
+                <td class="earning-block">
+                    {% for component in register.earning_components %}
+                    {{ component.label }} : <span class="amount">{{ row.earnings[component.key] }}</span>{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+                <td class="right amount">{{ row.gross_earnings }}</td>
+                <td class="deduction-block">
+                    {% for component in register.deduction_components %}
+                    {{ component.label }} : <span class="amount">{{ row.deductions[component.key] }}</span>{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+                <td class="right amount">{{ row.gross_deductions }}</td>
+                <td class="right amount">{{ row.net_payable }}</td>
+                <td class="signature"></td>
+            </tr>
+            {% endfor %}
+            <tr class="bold">
+                <td colspan="5" class="right">Grand Total</td>
+                <td class="right amount">{{ register.totals.gross_earnings }}</td>
+                <td></td>
+                <td class="right amount">{{ register.totals.gross_deductions }}</td>
+                <td class="right amount">{{ register.totals.net_payable }}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
