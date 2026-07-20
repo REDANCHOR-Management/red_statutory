@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { font-family: "Open Sans", sans-serif; font-size: 10px; color: #000; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #000; padding: 4px; vertical-align: top; }
+th { font-weight: bold; text-align: left; }
+.center { text-align: center; } .right { text-align: right; } .bold { font-weight: bold; }
+.header-label { font-size: 11px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+.header-address, .employee-block, .attendance-block, .rate-block, .earning-block, .deduction-block { line-height: 1.5; }
+.law-block { font-size: 9px; line-height: 1.4; min-height: 110px; }
+h2 { margin: 10px 0; text-align: center; }
+.wage-period { margin: 0 0 15px; text-align: center; }
+@page { size: A4 landscape; margin: 8mm; }
+</style>
+</head>
+<body>
+<table style="border:none; margin-bottom:15px;"><tr>
+<td style="border:none; width:35%;"><div class="header-label">Name and Address of Contractor</div><div class="header-address">{{ register.contractor_name|e }}<br>{{ register.contractor_address|e|replace('\n', '<br>')|safe }}</div></td>
+<td style="border:none; width:35%;"><div class="header-label">Name and Address of Principal Employer</div><div class="header-address">{{ register.principal_employer_name|e }}<br>{{ register.principal_employer_address|e|replace('\n', '<br>')|safe }}</div></td>
+<td style="border:none; width:30%;"><div class="law-block">(1) Form under Rule 6 of Equal Remuneration Rules 1976<br>(2) Gujarat Minimum Wages Rules 1961<br>(3) Payment of Wages Gujarat Rules 1963<br>(4) Contract Labour Rules 1972<br>(5) Inter State Migrant Workers Rules 1981</div></td>
+</tr></table>
+<h2>WAGE REGISTER</h2>
+<p class="wage-period">Wage Period: {{ display_date(register.from_date) }} to {{ display_date(register.to_date) }}</p>
+<table><thead><tr><th>Sr</th><th>Employee Details</th><th>Attendance</th><th>Wage Rates</th><th>Earnings</th><th>Gross Salary</th><th>Deductions</th><th>Gross Deductions</th><th>Net Payable</th><th>Signature</th></tr></thead>
+<tbody>{% set grand_gross = namespace(value=0) %}{% set grand_deductions = namespace(value=0) %}{% set grand_net = namespace(value=0) %}
+{% for row in rows %}{% set grand_gross.value = grand_gross.value + row.gross_earnings %}{% set grand_deductions.value = grand_deductions.value + row.gross_deductions %}{% set grand_net.value = grand_net.value + row.net_payable %}
+<tr><td class="center">{{ loop.index }}</td>
+<td class="employee-block">{{ row.employee_name|e }}<br>{{ row.employee|e }}<br>{{ row.designation|e }}<br><br>UAN : {{ row.uan|default('-', true)|e }}<br>ESIC : {{ row.esic_number|default('-', true)|e }}</td>
+<td class="attendance-block">WD : {{ row.working_days or 0 }}<br>PD : {{ row.payment_days or 0 }}<br>LWP : {{ row.leave_without_pay or 0 }}</td>
+<td class="rate-block">Basic : {{ money(row.rate_basic) }}<br>HRA : {{ money(row.rate_hra) }}<br>Other : {{ money(row.rate_other_allowance) }}<br>Conv : {{ money(row.rate_conveyance) }}<br>Spl : {{ money(row.rate_spl_allowance) }}</td>
+<td class="earning-block">Basic : {{ money(row.basic) }}<br>HRA : {{ money(row.hra) }}<br>Other : {{ money(row.other_allowance) }}<br>Conv : {{ money(row.conveyance) }}<br>Bonus : {{ money(row.bonus) }}<br>Leaves : {{ money(row.leaves) }}</td>
+<td class="right">{{ money(row.gross_earnings) }}</td>
+<td class="deduction-block">PF : {{ money(row.pf) }}<br>ESI : {{ money(row.esi) }}<br>PT : {{ money(row.professional_tax) }}<br>Advance : {{ money(row.advance_deduction) }}<br>Loan : {{ money(row.loan_deduction) }}<br>Food : {{ money(row.food_deduction) }}<br>Penalty : {{ money(row.penalty) }}<br>Insurance : {{ money(row.insurance) }}<br>Other : {{ money(row.other_deduction) }}</td>
+<td class="right">{{ money(row.gross_deductions) }}</td><td class="right">{{ money(row.net_payable) }}</td><td></td></tr>
+{% endfor %}
+<tr class="bold"><td colspan="5" class="right">Grand Total</td><td class="right">{{ money(grand_gross.value) }}</td><td></td><td class="right">{{ money(grand_deductions.value) }}</td><td class="right">{{ money(grand_net.value) }}</td><td></td></tr>
+</tbody></table>
+</body></html>
