@@ -1,0 +1,252 @@
+<!--
+=========================================================
+Project RED - Wage Register Template
+
+Version : 3.0.0
+
+Status : Premium Layout Release
+
+Visual changes only.
+
+Backend unchanged.
+SQL unchanged.
+Python unchanged.
+Jinja unchanged.
+
+Change Log
+
+- Premium typography
+- Balanced header
+- Government register styling
+- Better spacing
+- Improved attendance layout
+- Improved employee hierarchy
+- Improved nested tables
+- Better totals row
+- Better print layout
+- Better footer
+=========================================================
+-->
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<style>
+		@page { size: A4 landscape; margin: 8mm; }
+		* { box-sizing: border-box; }
+		body {
+			color: #111;
+			font-family: "Open Sans", Arial, Helvetica, sans-serif;
+			font-size: 9.5px;
+			line-height: 1.45;
+			margin: 0;
+			padding: 0 0 7mm;
+		}
+		table { width: 100%; border-collapse: collapse; }
+		th, td { border: 1px solid #222; padding: 6px 5px; vertical-align: top; }
+		th { font-weight: 700; text-align: left; }
+		thead { display: table-header-group; }
+		tr { page-break-inside: avoid; }
+		.no-border, .no-border td { border: 0; padding: 0; }
+		.center { text-align: center; }
+		.right { text-align: right; font-variant-numeric: tabular-nums; }
+		.bold { font-weight: 700; }
+		.header { margin: 0 0 9px; table-layout: fixed; }
+		.header td { padding: 0 12px 0 0; vertical-align: top; }
+		.header td:last-child { padding: 0 0 0 5px; }
+		.header-label {
+			border-bottom: 1px solid #222;
+			display: inline-block;
+			font-size: 12px;
+			font-weight: 700;
+			line-height: 1.3;
+			margin: 0 0 5px;
+			padding: 0 0 2px;
+			text-transform: uppercase;
+		}
+		.header-address { line-height: 1.5; }
+		.law-block {
+			font-size: 9px;
+			line-height: 1.52;
+			padding: 1px 0 0 2px;
+		}
+		.title-rule { border-top: 1px solid #222; height: 1px; margin: 3px 0 6px; }
+		.title-rule.bottom { margin: 6px 0 5px; }
+		.report-title {
+			font-size: 28px;
+			font-weight: 700;
+			letter-spacing: .4px;
+			line-height: 1.1;
+			margin: 0;
+			text-align: center;
+		}
+		.period { color: #666; font-size: 10px; margin: 0; text-align: center; }
+		.register { margin-top: 11px; table-layout: fixed; }
+		.register th {
+			background: #f5f5f5;
+			font-size: 9.5px;
+			line-height: 1.3;
+			padding: 8px 4px;
+			text-align: center;
+			vertical-align: middle;
+		}
+		.register td { line-height: 1.45; }
+		.register tbody tr:nth-child(even) td { background: #fcfcfc; }
+		.employee-name {
+			display: block;
+			font-size: 10.5px;
+			font-weight: 700;
+			line-height: 1.3;
+			margin: 0 0 3px;
+		}
+		.employee-detail { display: block; font-weight: 400; }
+		.employee-spacer { height: 7px; }
+		.attendance-block { padding-left: 7px; padding-right: 7px; }
+		.attendance-table { border-collapse: collapse; table-layout: fixed; width: 100%; }
+		.attendance-table td { border: 0; line-height: 1.7; padding: 0; }
+		.attendance-table .label { font-weight: 500; text-align: left; white-space: nowrap; }
+		.attendance-table .value { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+		.inner-table { border-collapse: collapse; table-layout: fixed; width: 100%; }
+		.inner-table td { border: 0; line-height: 1.62; padding: 0; }
+		.inner-table .label { font-weight: 500; padding-right: 4px; text-align: left; white-space: nowrap; }
+		.inner-table .value { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+		.amount {
+			font-variant-numeric: tabular-nums;
+			text-align: right;
+			vertical-align: middle;
+			white-space: nowrap;
+		}
+		.signature { min-width: 85px; position: relative; vertical-align: bottom !important; }
+		.signature:after {
+			border-top: 1px solid #999;
+			bottom: 12px;
+			content: "";
+			left: 14%;
+			position: absolute;
+			width: 72%;
+		}
+		.total-row td {
+			background: #e6e6e6 !important;
+			border-top: 2px solid #000;
+			font-size: 10px;
+			font-weight: 700;
+			vertical-align: middle;
+		}
+		.footer {
+			bottom: 0;
+			color: #444;
+			font-size: 8.5px;
+			position: fixed;
+			right: 0;
+			text-align: right;
+		}
+	</style>
+</head>
+<body>
+	<table class="no-border header">
+		<tr>
+			<td style="width:33.33%;">
+				<div class="header-label">Name and Address of Contractor</div>
+				<div class="header-address">SUPERMADE VENTURES PRIVATE LIMITED<br>D/619, Swati Clover, Shilaj Circle,<br>Thaltej, Ahmedabad, Gujarat - 380058</div>
+			</td>
+			<td style="width:33.33%;">
+				<div class="header-label">Name and Address of Principal Employer</div>
+				<div class="header-address">{{ principal_employer_name }}{% for line in principal_employer_address_lines %}<br>{{ line }}{% endfor %}</div>
+			</td>
+			<td style="width:33.34%;">
+				<div class="law-block">
+					<div>(1) Form under Rule 6 of Equal Remuneration Rules 1976</div>
+					<div>(2) Gujarat Minimum Wages Rules 1961</div>
+					<div>(3) Payment of Wages Gujarat Rules 1963</div>
+					<div>(4) Contract Labour Rules 1972</div>
+					<div>(5) Inter State Migrant Workers Rules 1981</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	<div class="title-rule"></div>
+	<div class="report-title">WAGE REGISTER</div>
+	<div class="period">Wage Period: {{ from_date }} to {{ to_date }}</div>
+	<div class="title-rule bottom"></div>
+
+	<table class="register">
+		<thead>
+			<tr>
+				<th style="width:3%;">Sr</th>
+				<th style="width:17%;">Employee Details</th>
+				<th style="width:7%;">Attendance</th>
+				<th style="width:11%;">Wage Rates</th>
+				<th style="width:12%;">Earnings</th>
+				<th style="width:7%;">Gross Salary</th>
+				<th style="width:14%;">Deductions</th>
+				<th style="width:8%;">Gross Deductions</th>
+				<th style="width:7%;">Net Payable</th>
+				<th style="width:14%;">Signature</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for row in rows %}
+			<tr>
+				<td class="center">{{ loop.index }}</td>
+				<td>
+					<span class="employee-name">{{ row.employee_name or '' }}</span>
+					<span class="employee-detail">{{ row.employee_id or '' }}</span>
+					<span class="employee-detail">{{ row.designation or '' }}</span>
+					<div class="employee-spacer"></div>
+					<span class="employee-detail">UAN : {{ row.uan or '-' }}</span>
+					<span class="employee-detail">ESIC : {{ row.esic_number or '-' }}</span>
+				</td>
+				<td class="attendance-block"><table class="attendance-table"><tr><td class="label">WD</td><td class="value">{{ "{:.0f}".format(row.working_days) }}</td></tr><tr><td class="label">PD</td><td class="value">{{ "{:.0f}".format(row.payment_days) }}</td></tr><tr><td class="label">LWP</td><td class="value">{{ "{:.0f}".format(row.leave_without_pay) }}</td></tr></table></td>
+				<td>
+					<table class="inner-table">
+						<tr><td class="label">Basic</td><td class="value">{{ "{:,.2f}".format(row.rate_basic) }}</td></tr>
+						<tr><td class="label">HRA</td><td class="value">{{ "{:,.2f}".format(row.rate_hra) }}</td></tr>
+						<tr><td class="label">Other</td><td class="value">{{ "{:,.2f}".format(row.rate_other_allowance) }}</td></tr>
+						<tr><td class="label">Conv</td><td class="value">{{ "{:,.2f}".format(row.rate_conveyance) }}</td></tr>
+						<tr><td class="label">Spl</td><td class="value">{{ "{:,.2f}".format(row.rate_spl_allowance) }}</td></tr>
+					</table>
+				</td>
+				<td>
+					<table class="inner-table">
+						<tr><td class="label">Basic</td><td class="value">{{ "{:,.2f}".format(row.basic) }}</td></tr>
+						<tr><td class="label">HRA</td><td class="value">{{ "{:,.2f}".format(row.hra) }}</td></tr>
+						<tr><td class="label">Other</td><td class="value">{{ "{:,.2f}".format(row.other_allowance) }}</td></tr>
+						<tr><td class="label">Conv</td><td class="value">{{ "{:,.2f}".format(row.conveyance) }}</td></tr>
+						<tr><td class="label">Bonus</td><td class="value">{{ "{:,.2f}".format(row.bonus) }}</td></tr>
+						<tr><td class="label">Leaves</td><td class="value">{{ "{:,.2f}".format(row.leaves) }}</td></tr>
+					</table>
+				</td>
+				<td class="amount">{{ "{:,.2f}".format(row.gross_earnings) }}</td>
+				<td>
+					<table class="inner-table">
+						<tr><td class="label">PF</td><td class="value">{{ "{:,.2f}".format(row.pf) }}</td></tr>
+						<tr><td class="label">ESI</td><td class="value">{{ "{:,.2f}".format(row.esi) }}</td></tr>
+						<tr><td class="label">PT</td><td class="value">{{ "{:,.2f}".format(row.professional_tax) }}</td></tr>
+						<tr><td class="label">Advance</td><td class="value">{{ "{:,.2f}".format(row.advance_deduction) }}</td></tr>
+						<tr><td class="label">Loan</td><td class="value">{{ "{:,.2f}".format(row.loan_deduction) }}</td></tr>
+						<tr><td class="label">Food</td><td class="value">{{ "{:,.2f}".format(row.food_deduction) }}</td></tr>
+						<tr><td class="label">Penalty</td><td class="value">{{ "{:,.2f}".format(row.penalty) }}</td></tr>
+						<tr><td class="label">Insurance</td><td class="value">{{ "{:,.2f}".format(row.insurance) }}</td></tr>
+						<tr><td class="label">Other</td><td class="value">{{ "{:,.2f}".format(row.other_deduction) }}</td></tr>
+					</table>
+				</td>
+				<td class="amount">{{ "{:,.2f}".format(row.gross_deductions) }}</td>
+				<td class="amount">{{ "{:,.2f}".format(row.net_payable) }}</td>
+				<td class="signature"></td>
+			</tr>
+			{% endfor %}
+			<tr class="total-row">
+				<td colspan="5" class="right">Grand Total</td>
+				<td class="amount">{{ "{:,.2f}".format(total_gross_earnings) }}</td>
+				<td></td>
+				<td class="amount">{{ "{:,.2f}".format(total_gross_deductions) }}</td>
+				<td class="amount">{{ "{:,.2f}".format(total_net_payable) }}</td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="footer">Page 1 of 1</div>
+</body>
+</html>
